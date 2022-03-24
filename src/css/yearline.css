@@ -1,0 +1,40 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Arial", "Helvetica", sans-serif;
+  width: 100%;
+  background: #fff;
+  overflow-y: hidden;
+}
+
+body {
+  padding: 10px;
+}
+
+.header {
+  width: calc(100% - 20px);
+}
+
+.timeline {
+  width: calc(100% - 20px);
+  height: 200px;
+  position: relative;
+}
+
+.year {
+  width: 89px;
+  height: 30px;
+  border: 1px solid #ddd;
+  display: inline-block;
+}
+
+.year:not(:last-child) {
+  border-right: none;
+}
+
+.time {
+  position: absolute;
+  border-left: 3px solid;
+  padding: 20px 0 0 4px;
+}
