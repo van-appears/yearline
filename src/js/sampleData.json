@@ -1,0 +1,62 @@
+[
+  {
+    "start": 1939,
+    "end": 1945,
+    "label": "World War 2"
+  },
+  {
+    "start": 1999,
+    "label": "The Matrix"
+  },
+  {
+    "start": 1984,
+    "label": "Ghostbusters"
+  },
+  {
+    "start": 1889,
+    "label": "Nintendo founded"
+  },
+  {
+    "start": 1890,
+    "label": "Setting for 'Dracula'",
+    "approximate": true
+  },
+  {
+    "start": -2700,
+    "label": "Building of The Giant's Ring",
+    "approximate": true
+  },
+  {
+    "start": -2600,
+    "label": "Great Pyramid of Giza",
+    "approximate": true
+  },
+  {
+    "start": -2000,
+    "label": "Extinction of Woolly Mammoth",
+    "approximate": true
+  },
+  {
+    "start": 1564,
+    "end": 1642,
+    "label": "Galileo Galilei"
+  },
+  {
+    "start": 1861,
+    "label": "Great Expectations published"
+  },
+  {
+    "start": 1680,
+    "end": 1718,
+    "label": "Blackbeard the Pirate (Edward Teach)",
+    "approximate": true
+  },
+  {
+    "start": 1710,
+    "label": "St. Paul's Cathedral (London) completed"
+  },
+  {
+    "start": 1969.5,
+    "label": "Apollo 11 lands on the moon"
+  }
+]

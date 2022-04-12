@@ -1,15 +1,15 @@
+const sampleData = require("./sampleData.json");
+const data = [ ...sampleData, {
+  "start": (new Date().getFullYear()) + (new Date().getMonth() / 12),
+  "label": "Now",
+}];
+
 window.onload = function () {
   const qs = selector => document.querySelector(selector);
   const headerEl = qs(".header");
   const timelineEl = qs(".timeline");
   const yearWidth = 90;
-
-  const data = [
-    {
-      start: 2017,
-      label: "Wobble"
-    }
-  ];
+  const barLeft = 7;
 
   let currentItems = 0;
   let currentScale = 1;
@@ -47,12 +47,34 @@ window.onload = function () {
     return Math.floor(date / currentScale) * currentScale;
   }
 
-  function calcLeft(item, startPositions) {
-    const base = scaleBase(item.start);
-    const remainder = item.start - base;
-    let offset = (remainder / currentScale) * yearWidth;
-    offset += startPositions[base];
-    return offset;
+  function calcPositions(item, startPositions) {
+    const leftBase = scaleBase(item.start);
+    const leftRemainder = item.start - leftBase;
+    let left = 0;
+    let width = undefined;
+    let hasLeft = false;
+    if (startPositions[leftBase] !== undefined) {
+      left = leftRemainder * yearWidth / currentScale;
+      left += startPositions[leftBase];
+      hasLeft = true;
+    }
+
+    if (item.end !== undefined) {
+      const rightBase = scaleBase(item.end);
+      const rightRemainder = item.end - rightBase;
+      console.log(item, rightBase, rightRemainder);
+      if (startPositions[rightBase] !== undefined) {
+        const removeBorder = hasLeft ? barLeft : 3;
+        width = rightRemainder * yearWidth / currentScale;
+        width += startPositions[rightBase];
+        width = Math.max(width - left - removeBorder, 0);
+      } else {
+        // TODO max remaining width
+      }
+      return { left, width, hasLeft };
+    }
+
+    return { left, hasLeft };
   }
 
   function fillGrid() {
@@ -68,14 +90,40 @@ window.onload = function () {
 
     const before = rightDate + currentScale;
     const after = rightDate + (1 - currentItems) * currentScale;
+    const ranges = [];
     timelineEl.innerHTML = "";
-    data.filter(onGrid(after, before)).forEach(x => {
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "time";
-      timeDiv.innerHTML = x.label;
-      timeDiv.style = `left: ${calcLeft(x, startPositions)}px`;
-      timelineEl.appendChild(timeDiv);
-    });
+    data
+      .filter(onGrid(after, before))
+      .sort((a, b) => {
+        const diff = a.start - b.start;
+        if (diff) { return diff; }
+        return a.label.localeCompare(b.label);
+      })
+      .forEach(x => {
+        const { left, width, hasLeft } = calcPositions(x, startPositions);
+        console.log("<<<", x, left);
+        const timeDiv = document.createElement("div");
+        const fineRange = ranges.find(({xs}) => {
+          return xs.every(({fromX, toX}) => !(left >= fromX && left <= toX));
+        });
+        const row = fineRange ? fineRange.row : ranges.length;
+
+        let className = "time";
+        if (width) { className += " bar"; }
+        if (!hasLeft) { className += " noLeft"; }
+
+        timeDiv.className = className;
+        timeDiv.innerHTML = `<span>${x.label}</span>`;
+        timeDiv.style = `left: ${left}px; width: ${width}px; top:${row * 48}px`;
+        timelineEl.appendChild(timeDiv);
+
+        const displayedWidth = timeDiv.children[0].getBoundingClientRect().width;
+        const rowRange = ranges[row] = ranges[row] || { row, xs: [] };
+        rowRange.xs.push({
+          fromX: left,
+          toX: left + displayedWidth + barLeft,
+        });
+      });
   }
 
   function rebuild() {

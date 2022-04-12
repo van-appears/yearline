@@ -18,7 +18,7 @@ body {
 
 .timeline {
   width: calc(100% - 20px);
-  height: 200px;
+  height: 500px;
   position: relative;
 }
 
@@ -36,5 +36,16 @@ body {
 .time {
   position: absolute;
   border-left: 3px solid;
-  padding: 20px 0 0 4px;
+  padding: 24px 0 0 4px;
+  white-space: nowrap;
+}
+
+.time.bar {
+ padding-top: 4px;
+ border-top: 20px solid;
+}
+
+.time.noLeft {
+  border-left: 0;
+  padding-left: 0;
 }
