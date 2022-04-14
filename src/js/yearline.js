@@ -40,7 +40,12 @@ window.onload = function () {
   function onGrid(after, before) {
     return item =>
       (item.start >= after && item.start < before) ||
-      (item.end && item.end >= after && item.end < before);
+      (item.end && item.start < after && item.end > after);
+  }
+
+  function inScale(item) {
+    const { minScale = 1, maxScale = 10000000 } = item;
+    return currentScale <= maxScale && currentScale >= minScale;
   }
 
   function scaleBase(date) {
@@ -62,15 +67,15 @@ window.onload = function () {
     if (item.end !== undefined) {
       const rightBase = scaleBase(item.end);
       const rightRemainder = item.end - rightBase;
-      console.log(item, rightBase, rightRemainder);
+      const removeBorder = hasLeft ? barLeft : 3;
       if (startPositions[rightBase] !== undefined) {
-        const removeBorder = hasLeft ? barLeft : 3;
         width = rightRemainder * yearWidth / currentScale;
         width += startPositions[rightBase];
-        width = Math.max(width - left - removeBorder, 0);
       } else {
-        // TODO max remaining width
+        const maxYear = Object.keys(startPositions).slice(-1)[0];
+        width = startPositions.max + 1;
       }
+      width = Math.max(width - left - removeBorder, 0);
       return { left, width, hasLeft };
     }
 
@@ -80,7 +85,9 @@ window.onload = function () {
   function fillGrid() {
     rightDate = scaleBase(rightDate);
 
-    const startPositions = {};
+    const startPositions = {
+      max: currentItems * yearWidth
+    };
     for (let item = 0; item < currentItems; item++) {
       const yearDiv = qs(`#${itemId(item)}`);
       const yearDate = rightDate + (1 + item - currentItems) * currentScale;
@@ -94,6 +101,7 @@ window.onload = function () {
     timelineEl.innerHTML = "";
     data
       .filter(onGrid(after, before))
+      .filter(inScale)
       .sort((a, b) => {
         const diff = a.start - b.start;
         if (diff) { return diff; }
@@ -101,7 +109,6 @@ window.onload = function () {
       })
       .forEach(x => {
         const { left, width, hasLeft } = calcPositions(x, startPositions);
-        console.log("<<<", x, left);
         const timeDiv = document.createElement("div");
         const fineRange = ranges.find(({xs}) => {
           return xs.every(({fromX, toX}) => !(left >= fromX && left <= toX));

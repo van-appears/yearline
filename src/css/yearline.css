@@ -10,16 +10,13 @@ body {
 
 body {
   padding: 10px;
-}
-
-.header {
   width: calc(100% - 20px);
 }
 
 .timeline {
-  width: calc(100% - 20px);
   height: 500px;
   position: relative;
+  overflow: hidden;
 }
 
 .year {
