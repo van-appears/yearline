@@ -6,6 +6,7 @@ const data = [ ...sampleData, {
 
 window.onload = function () {
   const qs = selector => document.querySelector(selector);
+  const controlEl = qs(".controls");
   const headerEl = qs(".header");
   const timelineEl = qs(".timeline");
   const yearWidth = 90;
@@ -17,6 +18,16 @@ window.onload = function () {
 
   function itemId(item) {
     return `item_${item}`;
+  }
+
+  function yearLabel(year, scale=currentScale) {
+    if (scale >= 1000000) {
+      return `${year / 1000000}M`;
+    }
+    if (scale >= 1000) {
+      return `${year / 1000}K`;
+    }
+    return year;
   }
 
   function buildGrid() {
@@ -48,8 +59,8 @@ window.onload = function () {
     return currentScale <= maxScale && currentScale >= minScale;
   }
 
-  function scaleBase(date) {
-    return Math.floor(date / currentScale) * currentScale;
+  function scaleBase(date, scale=currentScale) {
+    return Math.floor(date / scale) * scale;
   }
 
   function calcPositions(item, startPositions) {
@@ -82,6 +93,29 @@ window.onload = function () {
     return { left, hasLeft };
   }
 
+  function setRescaleLabels() {
+    const scaleUp = Math.max(currentScale / 10, 1);
+    const scaleDown = Math.min(currentScale * 10, 10000000);
+
+    if (scaleUp !== currentScale) {
+      const upRight = scaleBase(rightDate, scaleUp);
+      const upLeft = upRight - ((currentItems-1) * scaleUp);
+      qs("#up").innerHTML =
+        `${yearLabel(upLeft, scaleUp)}→${yearLabel(upRight, scaleUp)}`;
+    } else {
+      qs("#up").innerHTML = "-";
+    }
+
+    if (scaleDown !== currentScale) {
+      const downRight = scaleBase(rightDate, scaleDown);
+      const downLeft = downRight - ((currentItems-1) * scaleDown);
+      qs("#down").innerHTML =
+        `${yearLabel(downLeft, scaleDown)}→${yearLabel(downRight, scaleDown)}`;
+    } else {
+      qs("#down").innerHTML = "-";
+    }
+  }
+
   function fillGrid() {
     rightDate = scaleBase(rightDate);
 
@@ -92,7 +126,7 @@ window.onload = function () {
       const yearDiv = qs(`#${itemId(item)}`);
       const yearDate = rightDate + (1 + item - currentItems) * currentScale;
       startPositions[yearDate] = item * yearWidth;
-      yearDiv.innerHTML = yearDate;
+      yearDiv.innerHTML = yearLabel(yearDate);
     }
 
     const before = rightDate + currentScale;
@@ -120,7 +154,7 @@ window.onload = function () {
         if (!hasLeft) { className += " noLeft"; }
 
         timeDiv.className = className;
-        timeDiv.innerHTML = `<span>${x.label}</span>`;
+        timeDiv.innerHTML = `<span title="${x.label}">${x.label}</span>`;
         timeDiv.style = `left: ${left}px; width: ${width}px; top:${row * 48}px`;
         timelineEl.appendChild(timeDiv);
 
@@ -131,6 +165,8 @@ window.onload = function () {
           toX: left + displayedWidth + barLeft,
         });
       });
+
+    setRescaleLabels();
   }
 
   function rebuild() {

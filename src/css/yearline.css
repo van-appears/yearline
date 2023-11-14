@@ -46,3 +46,56 @@ body {
   border-left: 0;
   padding-left: 0;
 }
+
+button {
+  display: none;
+}
+
+button + label {
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+}
+
+label:before {
+  margin-right: 4px;
+  content: " ";
+}
+
+button + label,
+label:before {
+  display: inline-block;
+  cursor: pointer;
+  outline: 0;
+  width: 16px;
+  height: 16px;
+  text-indent: -99999px;
+  background-image: url(../img/yearline.png);
+  background-repeat: no-repeat;
+}
+
+label[for="home"] {
+  background-position: 0px 0;
+}
+
+label[for="add"] {
+  background-position: -16px 0;
+}
+
+label[for="source"] {
+  background-position: -32px 0;
+}
+
+label[id="down"],
+label[id="up"], {
+  float: right;
+}
+
+label[id="down"]:before {
+  background-position: -48px 0;
+}
+
+label[id="up"]:before {
+  background-position: -64px 0;
+}
