@@ -174,6 +174,13 @@ window.onload = function () {
     fillGrid();
   }
 
+  qs("#add").onclick = function() {
+
+  }
+  qs("#resetTime").onclick = function() {
+
+  }
+
   rebuild();
   window.onresize = rebuild;
   window.onkeydown = function (e) {
